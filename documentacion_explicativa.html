@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFBD PuntoJS - Documentación Técnica</title>
+    
+    <!-- Fuentes: Inter para lectura y Share Tech Mono para estética tecnológica -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Librería Mermaid.js para el Diagrama ER Nativo -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    
+    <style>
+        /* Variables Estilo Claro Tecnológico */
+        :root {
+            --primary-color: #0369a1; /* Azul corporativo */
+            --secondary-color: #4338ca; /* Indigo */
+            --accent-bg: rgba(3, 105, 161, 0.05); /* Fondo azul suave */
+            --bg-color: #f8fafc; /* Fondo hiper claro, limpio */
+            --card-bg: #ffffff; /* Tarjetas blancas */
+            --text-dark: #1e293b; /* Texto oscuro/negro para gran contraste */
+            --text-light: #475569; /* Texto secundario */
+            --white: #ffffff;
+            --border-color: #e2e8f0; /* Borde gris perla */
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 0 10px rgba(0, 0, 0, 0.02);
+            --glow-hover: 0 10px 15px -3px rgba(3, 105, 161, 0.1);
+            --radius: 8px;
+            --font-mono: 'Share Tech Mono', monospace;
+            --code-bg: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+        }
+
+        /* Encabezado Principal */
+        header {
+            background-color: var(--white);
+            color: var(--primary-color);
+            text-align: center;
+            padding: 4rem 2rem;
+            border-bottom: 2px solid var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            position: relative;
+        }
+
+        header::before {
+            content: "[ INIT_PROCESS :: OK ]";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        header p {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Contenedor Principal */
+        main {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            font-size: 1.7rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: inline-block;
+            text-transform: uppercase;
+        }
+        
+        h2::before {
+            content: "> ";
+            color: var(--secondary-color);
+        }
+
+        /* Tarjetas (Cards) */
+        .tech-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            padding: 2.5rem;
+            border-left: 4px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card h3 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .tech-card ul {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            color: var(--text-light);
+            list-style-type: square;
+        }
+        
+        .tech-card ul li::marker { color: var(--secondary-color); }
+        .tech-card li { margin-bottom: 0.5rem; }
+        .tech-card p strong, .tech-card li strong { color: var(--text-dark); }
+
+        /* Cuadro de Ejemplos y Análisis */
+        .example-box {
+            background-color: rgba(67, 56, 202, 0.05);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(67, 56, 202, 0.2);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .example-box h4 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .example-box p {
+            color: var(--text-dark);
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+        }
+        
+        code.inline-code {
+            font-family: var(--font-mono);
+            background-color: var(--code-bg);
+            color: var(--primary-color);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            border: 1px solid var(--border-color);
+        }
+
+        pre.code-block {
+            background-color: #1e293b;
+            color: #f8fafc;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary-color);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            line-height: 1.4;
+        }
+
+        /* Imagen/Diagrama ER */
+        .diagram-container {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem 1rem;
+            background-color: var(--white);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            position: relative;
+        }
+        
+        .diagram-container::before {
+            content: "[ DATA_VIZ_LINK_ESTABLISHED ]";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: var(--card-bg);
+            padding: 0 10px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+        }
+
+        /* Grid de Módulos */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .module-icon {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-family: var(--font-mono);
+        }
+
+        .module-card h4 {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .module-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-card strong { color: var(--primary-color); }
+
+        /* Arquitectura */
+        .architecture-wrapper {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .layer {
+            position: relative;
+            padding: 1.5rem 1.5rem 1.5rem 2.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            background-color: var(--bg-color);
+        }
+
+        .layer:last-child { margin-bottom: 0; }
+        
+        .layer::before {
+            content: "▼";
+            position: absolute;
+            left: 10px;
+            top: 28px;
+            font-family: var(--font-mono);
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+        }
+
+        .layer h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .layer p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Enlace Github */
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--text-dark);
+            text-decoration: none;
+            background-color: var(--white);
+            padding: 12px 24px;
+            border-radius: 40px;
+            border: 1px solid var(--border-color);
+            font-family: var(--font-mono);
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .github-link:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--glow-hover);
+            color: var(--primary-color);
+            background-color: var(--bg-color);
+        }
+
+        /* Pie de página */
+        footer {
+            background-color: var(--white);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .tech-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>AFBD PuntoJS</h1>
+        <p>Documentación Explicativa del Sistema CRM</p>
+    </header>
+
+    <main>
+        <!-- Sección 1: El Problema -->
+        <section>
+            <h2>[ REPORTE_DE_ERROR ] Contexto del Proyecto</h2>
+            <div class="tech-card">
+                <h3>Problema</h3>
+                <p>
+                    La empresa gestiona múltiples clientes y campañas de marketing (SEO, redes sociales, anuncios), pero actualmente lleva el seguimiento en Excel. Esto provoca:
+                </p>
+                <ul>
+                    <li><strong>Dificultad para saber qué campañas están activas.</strong></li>
+                    <li><strong>Falta de control sobre tareas asignadas a empleados.</strong></li>
+                    <li><strong>Problemas para ver resultados (KPIs) por campaña.</strong></li>
+                    <li><strong>Duplicidad de información.</strong></li>
+                </ul>
+
+                <div class="example-box">
+                    <h4>>>> Ejemplo en la vida real:</h4>
+                    <p>
+                        "Un cliente contrata una campaña de SEO y al mismo tiempo otra de Anuncios Pagados. El equipo encargado de los anuncios <em>(Empleado A)</em> anota los reportes en su propia hoja de cálculo, mientras que el equipo de SEO <em>(Empleado B)</em> los guarda en un documento distinto. A fin de mes, el coordinador pierde horas intentando cruzar la información para generar el reporte de KPIs total para el cliente. Peor aún, como toda la información está dispersa, frecuentemente se duplican los datos del cliente, la campaña queda listada indefinidamente como 'activa' y no se sabe exactamente qué tarea de optimización web le tocaba hoy al Empleado B."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Diagrama ER -->
+        <section>
+            <h2>[ MODELO_DATOS ] Arquitectura Relacional</h2>
+            <div class="tech-card">
+                <h3>Diagrama Entidad-Relación (ER)</h3>
+                <p>
+                    El siguiente modelo relacional ilustra la estructuración en base de datos de las entidades y cómo se vinculan. Está renderizado nativamente a través del código fuente con <b>MermaidJS</b>:
+                </p>
+                
+                <div class="diagram-container">
+                    <div class="mermaid">
+erDiagram
+    CLIENTE {
+        int id_cliente PK
+        string nombre
+        string email
+        string telefono
+        string empresa
+    }
+
+    CAMPAÑA {
+        int id_campania PK
+        string nombre
+        string tipo
+        date fecha_inicio
+        date fecha_fin
+        int id_cliente FK
+    }
+
+    EMPLEADO {
+        int id_empleado PK
+        string nombre
+        string email
+        string rol
+    }
+
+    TAREA {
+        int id_tarea PK
+        string descripcion
+        string estado
+        date fecha_limite
+        int id_campania FK
+        int id_empleado FK
+    }
+
+    RESULTADO {
+        int id_resultado PK
+        float valor
+        date fecha
+        int id_campania FK
+    }
+
+    CLIENTE ||--o{ CAMPAÑA : tiene
+    CAMPAÑA ||--o{ TAREA : incluye
+    EMPLEADO ||--o{ TAREA : realiza
+    CAMPAÑA ||--o{ RESULTADO : genera
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h4>>>> Análisis de Relaciones e Independencia:</h4>
+                    <ul>
+                        <li><strong>CLIENTE ↔ CAMPAÑA (1:N):</strong> Un <code class="inline-code">CLIENTE</code> único puede poseer múltiples instancias de <code class="inline-code">CAMPAÑA</code> asociadas, centralizando sus proyectos en un registro unificado (e.g., eliminando la duplicidad comentada en el ejemplo).</li>
+                        <li><strong>CAMPAÑA ↔ RESULTADO (1:N):</strong> Una <code class="inline-code">CAMPAÑA</code> genera constantemente puntos de <code class="inline-code">RESULTADO</code> (KPIs y métricas). Cada métrica queda iterativamente anclada a su respectiva campaña matriz mediante <code class="inline-code">id_campania</code>, aportando trazabilidad temporal exacta y facilitando la elaboración de reportes mensuales.</li>
+                        <li><strong>TAREA como Entidad Pivote:</strong> La tabla <code class="inline-code">TAREA</code> vincula las acciones a ejecutar (<code class="inline-code">id_campania</code>) con quién debe responsabilizarse de hacerlas (<code class="inline-code">id_empleado</code>). De esta manera un empleado realiza múltiples tareas, y una campaña aglutina diversas asignaciones, obteniendo completo control de estatus sobre la fase de cada equipo operativo.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 3: Módulos de Implementación -->
+        <section>
+            <h2>[ SYS_DEPLOY ] Módulos Implementados</h2>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                A través del backend en <strong>Spring Boot</strong>, hemos encapsulado la lógica del negocio en dominios relacionales, centralizando todos los subprocesos lógicos y la trazabilidad descrita en el esquema a través de APIs de red:
+            </p>
+
+            <div class="modules-grid">
+                <!-- Cliente -->
+                <div class="module-card">
+                    <div class="module-icon">[ MOD_01 ]</div>
+                    <h4>Apartado de Clientes</h4>
+                    <p><strong>¿Qué soluciona?:</strong> La duplicidad de datos.</p>
+                    <p><strong>Implementación:</strong> Entidad central conectada a la BD dedicada a la identidad corporativa. Mantiene el directorio estructurado y limpio de redundancias semánticas.</p>
+                </div>
+
+                <!-- Campañas -->
+                <div class="module-card">
+                    <div class="module-icon">[ MOD_02 ]</div>
+                    <h4>Apartado de Campañas</h4>
+                    <p><strong>¿Qué soluciona?:</strong> Dificultad de rastreo de estatus.</p>
+                    <p><strong>Implementación:</strong> Funciona como un pipeline aglutinador. Posee fechas estrictas e indicadores lógicos de viabilidad (activa/inactiva/finalizada).</p>
+                </div>
+
+                <!-- Empleados -->
+                <div class="module-card">
+                    <div class="module-icon">[ MOD_03 ]</div>
+                    <h4>Apartado de Empleados</h4>
+                    <p><strong>¿Qué soluciona?:</strong> Desorganización del recurso humano.</p>
+                    <p><strong>Implementación:</strong> Instancia al directorio de perfiles y roles que ejecutan trabajo en la agencia, proveyendo autoría trazable sobre quién ejecuta el trabajo.</p>
+                </div>
+
+                <!-- Tareas -->
+                <div class="module-card">
+                    <div class="module-icon">[ MOD_04 ]</div>
+                    <h4>Apartado de Tareas</h4>
+                    <p><strong>¿Qué soluciona?:</strong> Falta de control en la delegación de responsabilidades.</p>
+                    <p><strong>Implementación:</strong> Vincula en forma de puente automatizado a un Empleado con una Campaña específica, imponiendo control de avance semafórico y prioridades asíncronas.</p>
+                </div>
+
+                <!-- Resultados / KPIs -->
+                <div class="module-card">
+                    <div class="module-icon">[ MOD_05 ]</div>
+                    <h4>Resultados / Métricas</h4>
+                    <p><strong>¿Qué soluciona?:</strong> Problemas para obtener KPIs y compilar estadísticos unificados.</p>
+                    <p><strong>Implementación:</strong> Recolector en forma de logs y valores de KPI (Clicks, CTR, Leads). Resuelven la dispersión integrando los resultados de forma foránea en la base de datos maestra.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 4: Arquitectura Técnica -->
+        <section>
+            <h2>[ ARCHITECTURE ] Forma de Implementación Técnica</h2>
+            <div class="architecture-wrapper">
+                <p style="color: var(--text-light); margin-bottom: 2rem;">
+                    A nivel de código fuente en Java Spring, la implementación escala mediante la segregación de componentes por el patrón arquitectónico <strong>MVC/N-Capas</strong> garantizando flujos aislados de I/O de la DB. Se exponen a continuación ejemplos de código real del proyecto:
+                </p>
+
+                <div class="layer">
+                    <h4>Capa de Dominio (Modelos de Entidad)</h4>
+                    <p>Instrucciones de clase marcadas con <code class="inline-code">@Entity</code>. Aquí se codifica con exactitud el esquema de las tablas vistas en el diagrama relacional, mapeando variables orientadas a objetos como columnas de MySQL.</p>
+<pre class="code-block">@Entity
+public class Campania {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idCampania;
+    
+    @Column(nullable = false)
+    private String nombre;
+    
+    @ManyToOne
+    @JoinColumn(name = "idCliente")
+    private Cliente cliente;
+
+    @OneToMany(mappedBy = "campania")
+    @JsonIgnore
+    private List&lt;Tarea&gt; tareas;
+}</pre>
+                </div>
+                
+                <div class="layer">
+                    <h4>Capa de Repositorios (Data Access)</h4>
+                    <p>Interfaces extendiendo <code class="inline-code">Spring Data JPA</code> que facilitan como un wrapper virtual la inyección y manipulación de información sin el overhead de sentencias SQL nativas.</p>
+<pre class="code-block">public interface RepositorioCampania extends JpaRepository&lt;Campania, Integer&gt; {
+    // Todos los métodos CRUD básicos (save, findById, findAll, deleteById) 
+    // vienen integrados automáticamente por Spring Data JPA
+}</pre>
+                </div>
+
+                <div class="layer">
+                    <h4>Capa de Servicios (Core Rules)</h4>
+                    <p>Cerebro transaccional con <code class="inline-code">@Service</code>. Efectúa verificaciones sistemáticas antes de la persistencia de datos.</p>
+<pre class="code-block">@Service
+public class ServicioCampania {
+    @Autowired
+    RepositorioCampania repositorioCampania;
+    
+    // Crear campaña delegando la persistencia
+    public Campania crearCampania(Campania campania) {
+        return repositorioCampania.save(campania);
+    }
+    
+    // Actualizar con reglas de modificación
+    public Campania actualizar(int id, Campania nueva) {
+        Campania existente = buscarCampaniaPorID(id);
+        
+        existente.setNombre(nueva.getNombre());
+        existente.setTipo(nueva.getTipo());
+        existente.setFechaInicio(nueva.getFechaInicio());
+        existente.setFechaFin(nueva.getFechaFin());
+
+        return repositorioCampania.save(existente);
+    }
+}</pre>
+                </div>
+
+                <div class="layer">
+                    <h4>Capa de Controladores (Routing Front-End)</h4>
+                    <p>Los <code class="inline-code">@RestController</code> abren los endpoints de la API REST que exponen el backend a un frontend o aplicación cliente (por ejemplo en React o Angular).</p>
+<pre class="code-block">@RestController
+@RequestMapping("/campañas")
+public class ControladorCampania {
+    @Autowired
+    private ServicioCampania servicioCampania;
+    
+    // Endpoint para listar a través de peticiones HTTP
+    @GetMapping("/lista")
+    public List&lt;Campania&gt; listar() {
+        return servicioCampania.listar();
+    }
+
+    // Retorna una campaña en JSON puro
+    @GetMapping("/buscar/{id}")
+    public Campania obtener(@PathVariable int id) {
+        return servicioCampania.buscarCampaniaPorID(id);
+    }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 5: Pruebas y Testing REST -->
+        <section>
+            <h2>[ API_TESTING ] Pruebas con Postman</h2>
+            <div class="tech-card">
+                <h3>Guía de Ejecución de Peticiones</h3>
+                <p>
+                    Dado que el núcleo de AFBD.PuntoJS es una API REST pura, la forma correcta de validar el funcionamiento del Guardado, Consulta y Eliminación es utilizando una colección de <strong>Postman</strong> para inyectar datos simulando las llamadas de un FronEnd:
+                </p>
+
+                <div class="example-box">
+                    <h4>>>> 1. Verificación del Host</h4>
+                    <p>Asegúrate de que el log de Spring Boot de tu IDE (IntelliJ o Eclipse) marque <em>"Started Application..."</em>. Por defecto, tu base de datos y la API responderán en el localhost:</p>
+                    <code class="inline-code">Base URL: http://localhost:8080</code> ó <code class="inline-code">http://localhost:6969</code>
+                </div>
+
+                <div class="example-box">
+                    <h4>>>> 2. Prueba de Creación (POST)</h4>
+                    <p>En Postman, crea un Request de tipo <strong>POST</strong> y elige en las pestañas del Body la opción <code>raw</code> formato <code>JSON</code>. Pega un Payload válido de la entidad a probar y dispara (Send).</p>
+<pre class="code-block" style="margin-top: 10px;">// Ruta: POST http://localhost:6969/campañas/crear
+
+{
+    "nombre": "Campaña de Promoción SEO de Verano",
+    "tipo": "Motores de Búsqueda (Google Ads)",
+    "fechaInicio": "2026-06-15",
+    "fechaFin": "2026-08-31"
+}</pre>
+                </div>
+
+                <div class="example-box">
+                    <h4>>>> 3. Lectura y Comprobación (GET)</h4>
+                    <p>Para comprobar que Hibernate y MySQL persistieron los datos correctamente, crea en Postman una petición <strong>GET</strong> limpia y lánzala hacia tu lista. La consola te retornará un bloque JSON con IDs automáticos:</p>
+<pre class="code-block" style="margin-top: 10px;">// Ruta: GET http://localhost:6969/campañas/lista</pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AFBD.PuntoJS - Documentación Oficial del Proyecto.</p>
+        <div style="margin-top: 2rem;">
+            <a href="https://github.com/ACount5/AFBD_PuntoJS_FFEOE" target="_blank" class="github-link">
+                <!-- Icono de GitHub en SVG oscuro -->
+                <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+                Ver Repositorio en GitHub
+            </a>
+        </div>
+    </footer>
+
+</body>
+</html>
