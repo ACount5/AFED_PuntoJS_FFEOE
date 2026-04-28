@@ -1,96 +1,312 @@
-# AFBD.PuntoJS
+# README - Pruebas unitarias e integración de la entidad Empleado
 
-AFBD.PuntoJS es una aplicación backend desarrollada con **Spring Boot** para la gestión y administración orientada a campañas (CRM/Telemarketing). El sistema permite administrar de forma centralizada **Campañas, Clientes, Empleados, Tareas y Resultados**, siguiendo una arquitectura de software multicapa estándar.
+## Descripción general
 
-## 🛠 Tecnologías Utilizadas
+En este proyecto se han desarrollado pruebas automáticas para verificar el correcto funcionamiento del sistema de gestión de empleados en una aplicación Spring Boot.
 
-- **Java 21**
-- **Spring Boot 3.x/4.x** (Módulos: Web MVC, Data JPA, Data REST)
-- **MySQL** (Base de datos relacional)
-- **Lombok** (Reducción de código repetitivo/Boilerplate)
-- **Maven** (Gestión de dependencias y construcción)
+Se han implementado dos tipos de pruebas:
 
-## 📝 Requisitos Previos
+1. **Pruebas unitarias**
 
-Asegúrate de tener instalado lo siguiente en tu entorno de desarrollo antes de intentar arrancar la aplicación:
+   * Validan individualmente la lógica del servicio `ServicioEmpleado`.
+   * Comprueban operaciones CRUD básicas:
 
-1. **Java Development Kit (JDK) 21**. Asegúrate de que la variable de entorno `JAVA_HOME` apunte a esta versión.
-2. **Maven** (Opcional, el proyecto incluye Maven Wrapper `./mvnw` para facilitar el proceso).
-3. **MySQL Server** actuando en el puerto `3306`.
+      * Alta de empleado
+      * Modificación de datos
+      * Eliminación de empleado
 
-## 🗄️ Configuración de la Base de Datos
+2. **Prueba de integración**
 
-El proyecto está configurado en el archivo `application.properties` para conectarse a una base de datos MySQL local (`PuntoJS_DB`) con credenciales específicas. Sigue estos pasos en tu servidor de base de datos MySQL:
+   * Verifica el funcionamiento conjunto de:
 
-1. Inicia sesión en MySQL usando un usuario administrador o `root`:
-   ```bash
-   mysql -u root -p
-   ```
+      * Controlador
+      * Servicio
+      * Repositorio
+      * Base de datos
+   * Simula peticiones HTTP reales sobre la API REST.
 
-2. Crea la base de datos requerida para la aplicación:
-   ```sql
-   CREATE DATABASE PuntoJS_DB;
-   ```
+---
 
-3. Crea el usuario y asígnale los privilegios necesarios:
-   ```sql
-   CREATE USER 'usuario'@'localhost' IDENTIFIED BY 'root123';
-   GRANT ALL PRIVILEGES ON PuntoJS_DB.* TO 'usuario'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
+# 1. Pruebas unitarias
 
-> **Nota:** La aplicación utiliza `spring.jpa.hibernate.ddl-auto=update`. Esto significa que Hibernate creará automáticamente las tablas y la estructura necesaria en la base de datos `PuntoJS_DB` la primera vez que se ejecute la aplicación.
+Las pruebas unitarias se realizan sobre la clase:
 
-## 🚀 Despliegue y Arranque del Proyecto
+```java
+ServicioEmpleado
+```
 
-Puedes levantar la aplicación directamente en modo desarrollo o bien empaquetarla para un entorno de producción.
+Estas pruebas verifican que los métodos del servicio funcionen correctamente sobre la base de datos de prueba H2.
 
-### Opción 1: Ejecutar usando Spring Boot Plugin (Modo Desarrollo)
+La clase de pruebas utilizada es:
 
-Abre un terminal en la raíz del proyecto (donde se encuentra el archivo `pom.xml` o los archivos `mvnw`) y ejecuta el siguiente comando:
+```java
+ServicioEmpleadoTest
+```
 
-**En Linux / macOS:**
+---
+
+## 1.1 Alta de un nuevo empleado
+
+### Objetivo:
+
+Comprobar que se puede registrar correctamente un nuevo empleado.
+
+### Flujo:
+
+1. Se crea un objeto `Empleado`.
+2. Se llama al método:
+
+```java
+servicioEmpleado.crearEmpleado(empleado)
+```
+
+3. Se verifica que:
+
+   * El empleado no sea nulo.
+   * Se haya generado un ID.
+   * Los datos coincidan.
+
+### Resultado esperado:
+
+El empleado queda almacenado correctamente.
+
+---
+
+## 1.2 Modificación de datos
+
+### Objetivo:
+
+Verificar que los datos de un empleado existente pueden actualizarse correctamente.
+
+### Flujo:
+
+1. Se crea un empleado.
+2. Se genera un objeto con nuevos datos.
+3. Se llama al método:
+
+```java
+servicioEmpleado.actualizar(id, nuevo)
+```
+
+4. Se comprueba que:
+
+   * El nombre se actualiza.
+   * El email se actualiza.
+   * El rol se actualiza.
+
+### Resultado esperado:
+
+Los datos del empleado quedan modificados correctamente.
+
+---
+
+## 1.3 Eliminación de empleado
+
+### Objetivo:
+
+Comprobar que un empleado puede eliminarse correctamente.
+
+### Flujo:
+
+1. Se crea un empleado.
+2. Se llama al método:
+
+```java
+servicioEmpleado.borrarEmpleadoPorID(id)
+```
+
+3. Se busca nuevamente el empleado.
+4. Se verifica que el resultado sea `null`.
+
+### Resultado esperado:
+
+El empleado desaparece de la base de datos.
+
+---
+
+# 2. Prueba de integración
+
+La prueba de integración valida la interacción real entre:
+
+* `ControladorEmpleado`
+* `ServicioEmpleado`
+* `RepositorioEmpleado`
+* Base de datos H2
+
+La clase de prueba utilizada es:
+
+```java
+EmpleadoIntegracionTest
+```
+
+---
+
+## 2.1 Crear y buscar empleado
+
+### Objetivo:
+
+Comprobar el flujo completo de creación y recuperación de un empleado a través de la API REST.
+
+---
+
+### Paso 1: Crear empleado
+
+Se simula una petición HTTP:
+
+```http
+POST /empleados/crear
+```
+
+Con el cuerpo JSON:
+
+```json
+{
+  "nombre": "Laura",
+  "email": "laura@gmail.com",
+  "rol": "Analista"
+}
+```
+
+Se verifica que:
+
+* La respuesta sea correcta (`200 OK`)
+* Se genere un identificador
+* Los datos coincidan
+
+---
+
+### Paso 2: Buscar empleado
+
+Posteriormente se realiza:
+
+```http
+GET /empleados/buscar/{id}
+```
+
+Se comprueba que:
+
+* El empleado existe
+* Los datos coinciden con los insertados
+
+---
+
+### Resultado esperado:
+
+Se valida correctamente la integración entre todas las capas.
+
+---
+
+# 3. Base de datos utilizada en pruebas
+
+Para las pruebas se utiliza una base de datos en memoria **H2**, configurada en:
+
+```properties
+src/test/resources/application.properties
+```
+
+Configuración:
+
+```properties
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+```
+
+### Ventajas:
+
+* No afecta la base de datos real.
+* Se crea automáticamente al iniciar las pruebas.
+* Se elimina al finalizar.
+
+---
+
+# 4. Dependencias necesarias
+
+En el archivo `pom.xml` deben incluirse:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Estas dependencias permiten utilizar:
+
+* JUnit 5
+* Spring Test
+* MockMvc
+* Base de datos H2
+
+---
+
+# 5. Ejecución de pruebas
+
+Las pruebas pueden ejecutarse de dos maneras:
+
+---
+
+## Desde el IDE
+
+Ejecutar la clase de pruebas:
+
+* `ServicioEmpleadoTest`
+* `EmpleadoIntegracionTest`
+
+Desde el menú:
+
 ```bash
-./mvnw spring-boot:run
+Run Test
 ```
 
-**En Windows:**
-```cmd
-mvnw.cmd spring-boot:run
+---
+
+## Desde Maven
+
+Ejecutar todas las pruebas:
+
+```bash
+mvn test
 ```
 
-### Opción 2: Empaquetar y ejecutar como JAR (Modo Producción)
+Ejecutar una prueba concreta:
 
-Si necesitas compilar la aplicación para generar un servidor empaquetado autónomo (archivo `.jar`):
+```bash
+mvn -Dtest=EmpleadoIntegracionTest test
+```
 
-1. Compila y empaqueta la aplicación excluyendo los tests si es necesario:
-   ```bash
-   ./mvnw clean package
-   ```
-   *(Recuerda usar `mvnw.cmd` en Windows)*
+---
 
-2. Se generará un artefacto JAR dentro del directorio `target/`. Inícialo usando el comando de Java:
-   ```bash
-   java -jar target/AFBD.PuntoJS-0.0.1-SNAPSHOT.jar
-   ```
+# 6. Resultado esperado
 
-### 🎯 Verificación del Arranque
+Si todas las pruebas son correctas, Maven mostrará:
 
-Una vez que la aplicación arranque, podrás ver los clásicos logs de inicio de **Spring Boot**. El servidor Tomcat embebido iniciará la API y quedará a la escucha en el puerto **6969**. 
+```bash
+BUILD SUCCESS
+```
 
-Puedes verificar que la API está funcionando accediendo a:
-- [http://localhost:6969/](http://localhost:6969/)
+Esto indica que:
 
-## 🏗️ Arquitectura y Estructura del Código
+* El alta de empleados funciona
+* La modificación funciona
+* La eliminación funciona
+* La integración entre controlador, servicio y base de datos es correcta
 
-El proyecto fue diseñado aplicando buenas prácticas de una arquitectura monolítica modular en sus correspondientes paquetes, organizados en `src/main/java/AFBD/PuntoJS/AFBD/PuntoJS/`:
+---
 
-- **`/Dominio` (Modelos / Entidades):** Contiene las clases Java mapeadas como entidades JPA (`@Entity`). Representan las tablas principales del negocio como `Campania`, `Cliente`, `Empleado`, `Resultado` y `Tarea`.
-- **`/Repositorio`:** Interfaces que extienden de Spring Data JPA (por ejemplo, `JpaRepository`). Abstraen el acceso y las consultas directas a la base de datos MySQL.
-- **`/Servicio`:** Componentes (`@Service`) que orquestan toda la lógica de negocio y las reglas de integración antes de persistir los datos a través de los repositorios.
-- **`/Controlador`:** Los controladores de API REST (`@RestController`). Definen las rutas de enlace y actúan como intermediarios entre las solicitudes web y los servicios de la aplicación.
+# Conclusión
 
-## 💡 Notas Adicionales
+Con estas pruebas se ha validado tanto la lógica interna del servicio como el funcionamiento conjunto de toda la aplicación.
 
-1. Si utilizas un IDE como IntelliJ IDEA o Eclipse, recuerda habilitar el procesamiento de anotaciones (Annotation Processing) para que **Lombok** funcione correctamente.
-2. Dado que el proyecto tiene la dependencia `spring-boot-devtools`, en modo de desarrollo puedes utilizar reinicio automático y la carga de clases en caliente al realizar cambios.
+Las pruebas unitarias garantizan el correcto funcionamiento de las operaciones básicas sobre empleados, mientras que la prueba de integración confirma que la API REST, la lógica de negocio y la persistencia en base de datos trabajan correctamente de forma integrada.
